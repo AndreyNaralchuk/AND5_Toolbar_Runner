@@ -8,6 +8,12 @@ It is a port of the PowerShell script `AND5_SCRIPTS_HOME\AND5_com\toolbar\1_AND5
 
 Full documentation: `F:\DEV_HOME\AI_Projects\AND5_Toolbar_Runner\README_FULL.md`
 
+## UI example
+
+The tray menu of the running program:
+
+![UI example](Images_From_Running/UI_Example.png)
+
 ## Features
 
 - Tray icon (`Shell_NotifyIconW`), tooltip `Andreys TOOLBAR`.
