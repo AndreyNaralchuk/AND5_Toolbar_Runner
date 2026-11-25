@@ -9,7 +9,7 @@
 #define APP_TIP L"Andreys TOOLBAR"
 #define APP_TRAY_ICON L"AND5_com\\toolbar\\ok.ico"
 #define APP_XML_NAME L"AND5_toolbar.xml"
-#define APP_ABOUT_TEXT L"This toolbar created by Andrey to speed up routine operations.\nCopyright 2023."
+#define APP_ABOUT_TEXT L"This toolbar created by Andrey Naralchuk to speed up routine operations.\nCopyright 2026."
 #define WM_TRAY (WM_APP + 1)
 #define ID_FIRST 40000
 

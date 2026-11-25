@@ -72,23 +72,60 @@ To remove the program: delete the folder `%LOCALAPPDATA%\AND5_Toolbar_Runner` an
 
 ## AND5_toolbar.xml
 
+Minimal example `AND5_SCRIPTS_HOME\AND5_toolbar.xml`:
+
 ```xml
+<?xml version="1.0" encoding="utf-8"?>
 <toolbar>
 	<menu>
-		<name>TC_DATA</name>
-		<icon>AND5_com\toolbar\folder.ico</icon>
-		<command>AND5_SCRIPTS_ROOT#AND5_com\daily_scripts\TC_DATA.bat</command>
+		<name>About</name>
+		<icon>AND5_com\toolbar\about.ico</icon>
 		<submenu>
-			<name>model.xml</name>
-			<icon>AND5_com\toolbar\xml.ico</icon>
-			<command>AND5_SCRIPTS_ROOT#AND5_com\toolbar\201_open_model_xml.bat</command>
+			<name>About</name>
+			<icon>AND5_com\toolbar\about.ico</icon>
 		</submenu>
+		<submenu>
+			<name>Exit</name>
+			<icon>AND5_com\toolbar\exit.ico</icon>
+		</submenu>
+	</menu>
+	<menu>
+		<name>Separator</name>
+		<icon />
+	</menu>
+	<menu>
+		<name>Task Manager</name>
+		<icon>AND5_com\daily_scripts\Task_Manager.ico</icon>
+		<command>AND5_SCRIPTS_ROOT#AND5_com\daily_scripts\Task_Manager.bat</command>
 	</menu>
 </toolbar>
 ```
 
-- `<command>` format: `VARIABLE#relative\path`.
+- `<command>` format: `VARIABLE#relative\path`. Without `VARIABLE#` the path is relative to `%AND5_SCRIPTS_ROOT%`.
 - `<icon>` is relative to `%AND5_SCRIPTS_ROOT%`. It can be empty.
+
+### Minimum for a working file
+
+- Needed: one `<menu>` with `<name>`. The root tag name is not checked.
+- Not needed: `<icon>`, `<command>`, `<submenu>`.
+- Not allowed: `<!DOCTYPE>` (DTD is prohibited).
+- `<name>Exit</name>` without `<command>` closes the program. `<name>About</name>` without `<command>` shows the About window.
+- An item with a name but no `<command>` (and not About or Exit) is shown, but a click does nothing.
+- If the XML is broken, missing, or has no `<menu>`, the program shows a fallback menu with `About` and `Exit` only.
+
+Smallest useful file:
+
+```xml
+<toolbar>
+	<menu>
+		<name>Task Manager</name>
+		<command>AND5_com\daily_scripts\Task_Manager.bat</command>
+	</menu>
+	<menu>
+		<name>Exit</name>
+	</menu>
+</toolbar>
+```
 
 ## Environment variables
 
