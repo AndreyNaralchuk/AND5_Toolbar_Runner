@@ -14,6 +14,47 @@ The tray menu of the running program:
 
 ![UI example](Images_From_Running/UI_Example.png)
 
+## Download
+
+**Latest version: [v2026.11.25](https://github.com/AndreyNaralchuk/AND5_Toolbar_Runner/releases/tag/v2026.11.25)**
+
+| Platform | File | Instruction |
+|---|---|---|
+| Windows x64 | [Download `.exe`](https://github.com/AndreyNaralchuk/AND5_Toolbar_Runner/releases/latest/download/AND5_Toolbar_Runner.exe) | Run `AND5_Toolbar_Runner.exe`. One file, no installer. |
+
+**All versions:** [GitHub Releases](https://github.com/AndreyNaralchuk/AND5_Toolbar_Runner/releases)
+
+### Install with PowerShell
+
+Run in a normal PowerShell window. The script downloads the program to `%LOCALAPPDATA%\AND5_Toolbar_Runner`, adds a shortcut to autostart and starts the program.
+
+```powershell
+$dir = Join-Path $env:LOCALAPPDATA 'AND5_Toolbar_Runner'
+$exe = Join-Path $dir 'AND5_Toolbar_Runner.exe'
+New-Item -ItemType Directory -Force -Path $dir | Out-Null
+
+# Download the latest release
+Invoke-WebRequest -Uri 'https://github.com/AndreyNaralchuk/AND5_Toolbar_Runner/releases/latest/download/AND5_Toolbar_Runner.exe' -OutFile $exe
+
+# Autostart shortcut
+$lnk = Join-Path ([Environment]::GetFolderPath('Startup')) 'AND5_Toolbar_Runner.lnk'
+$sc = (New-Object -ComObject WScript.Shell).CreateShortcut($lnk)
+$sc.TargetPath = $exe
+$sc.WorkingDirectory = $dir
+$sc.Save()
+
+# Start now
+Start-Process $exe
+```
+
+The program needs the variable `AND5_SCRIPTS_HOME` (folder with `AND5_toolbar.xml`), or a path to the XML file as the first argument. Set the variable once:
+
+```powershell
+[Environment]::SetEnvironmentVariable('AND5_SCRIPTS_HOME', 'D:\path\AND5_SCRIPTS_HOME', 'User')
+```
+
+To remove the program: delete the folder `%LOCALAPPDATA%\AND5_Toolbar_Runner` and the shortcut `AND5_Toolbar_Runner.lnk` in `shell:startup`.
+
 ## Features
 
 - Tray icon (`Shell_NotifyIconW`), tooltip `Andreys TOOLBAR`.
@@ -214,3 +255,9 @@ For autostart, put a shortcut in `shell:startup` or use Task Scheduler.
 
 - [ ] Single instance (named mutex).
 - [ ] Reload XML without restart.
+
+## License
+
+MIT License. Copyright (c) 2026 Andrey Naralchuk. See [LICENSE](LICENSE).
+
+The MIT License covers the source code of this project. Third-party programs in `AND5_SCRIPTS_HOME\BIN` and `example` (Sysinternals tools such as Autoruns, Process Explorer, TCPView, Procmon) belong to Microsoft and have their own license terms.
