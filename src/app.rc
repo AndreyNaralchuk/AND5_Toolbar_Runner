@@ -1,0 +1,3 @@
+#include "resource.h"
+
+IDI_APP ICON "..\\AND5_SCRIPTS_HOME\\AND5_com\\toolbar\\ok.ico"

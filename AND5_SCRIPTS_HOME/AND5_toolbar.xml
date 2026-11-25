@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<toolbar>
+	<menu>
+		<name>About</name>
+		<icon>AND5_com\toolbar\about.ico</icon>
+		<submenu>
+			<name>About</name>
+			<icon>AND5_com\toolbar\about.ico</icon>
+		</submenu>
+		<submenu>
+			<name>AND5_options.ini</name>
+			<icon>AND5_com\toolbar\settings.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\toolbar\205_open_AND5_options_ini.bat</command>
+		</submenu>
+		<submenu>
+			<name>Exit</name>
+			<icon>AND5_com\toolbar\exit.ico</icon>
+		</submenu>
+	</menu>
+	<menu>
+		<name>Task Manager</name>
+		<icon>AND5_com\daily_scripts\Task_Manager.ico</icon>
+		<command>AND5_SCRIPTS_ROOT#AND5_com\daily_scripts\Task_Manager.bat</command>
+	</menu>
+	<menu>
+		<name>Open Last TC SYSLOG</name>
+		<icon>AND5_com\daily_scripts\open_TC_SYSLOG.ico</icon>
+		<command>AND5_SCRIPTS_ROOT#AND5_com\daily_scripts\open_TC_SYSLOG.bat</command>
+	</menu>
+	<menu>
+		<name>Separator</name>
+		<icon />
+	</menu>
+	<menu>
+		<name>TC_DATA</name>
+		<icon>AND5_com\daily_scripts\TC_DATA.ico</icon>
+		<command>AND5_SCRIPTS_ROOT#AND5_com\daily_scripts\TC_DATA.bat</command>
+		<submenu>
+			<name>tc_profilevars.bat</name>
+			<icon>AND5_com\toolbar\settings.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\toolbar\200_open_tc_profilevars.bat</command>
+		</submenu>
+		<submenu>
+			<name>model.xml</name>
+			<icon>AND5_com\toolbar\xml.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\toolbar\201_open_model_xml.bat</command>
+		</submenu>
+	</menu>
+	<menu>
+		<name>TC_ROOT</name>
+		<icon>AND5_com\daily_scripts\TC_ROOT.ico</icon>
+		<command>AND5_SCRIPTS_ROOT#AND5_com\daily_scripts\TC_ROOT.bat</command>
+		<submenu>
+			<name>configuration.xml</name>
+			<icon>AND5_com\toolbar\xml.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\toolbar\203_open_configuration_xml.bat</command>
+		</submenu>
+		<submenu>
+			<name>genregxml.bat</name>
+			<icon>AND5_com\toolbar\settings.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\toolbar\204_genregxml.bat</command>
+		</submenu>
+		<submenu>
+			<name>tem.bat</name>
+			<icon>AND5_com\toolbar\settings.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\toolbar\206_tem.ps1</command>
+		</submenu>
+	</menu>
+	<menu>
+		<name>Teamcenter Scripts</name>
+		<icon>AND5_com\toolbar\tc_scripts.ico</icon>
+		<submenu>
+			<name>STOP  TC services</name>
+			<icon>AND5_com\toolbar\stop.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\tc_scripts\200_AND5_stop_TC_services.ps1</command>
+		</submenu>
+		<submenu>
+			<name>START TC services</name>
+			<icon>AND5_com\toolbar\start.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\tc_scripts\201_AND5_start_TC_services.ps1</command>
+		</submenu>
+		<submenu>
+			<name>Separator</name>
+			<icon />
+		</submenu>
+		<submenu>
+			<name>LIGHT TC Backup</name>
+			<icon>AND5_com\toolbar\backup_pack.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\tc_scripts\105_AND5_TC_backup_light.ps1</command>
+		</submenu>
+		<submenu>
+			<name>LIGHT TC Restore</name>
+			<icon>AND5_com\toolbar\backup_restore.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\tc_scripts\106_AND5_TC_restore_light.ps1</command>
+		</submenu>
+		<submenu>
+			<name>Separator</name>
+			<icon />
+		</submenu>
+		<submenu>
+			<name>FULL TC Backup</name>
+			<icon>AND5_com\toolbar\backup_pack.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\tc_scripts\100_AND5_TC_backup.ps1</command>
+		</submenu>
+		<submenu>
+			<name>SQL Backup</name>
+			<icon>AND5_com\toolbar\backup_pack.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\tc_scripts\101_AND5_SQL_backup.ps1</command>
+		</submenu>
+		<submenu>
+			<name>SQL Restore</name>
+			<icon>AND5_com\toolbar\backup_restore.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\tc_scripts\103_AND5_SQL_restore.ps1</command>
+		</submenu>
+		<submenu>
+			<name>FULL TC Restore</name>
+			<icon>AND5_com\toolbar\backup_restore.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\tc_scripts\104_AND5_TC_restore.ps1</command>
+		</submenu>
+		<submenu>
+			<name>Separator</name>
+			<icon />
+		</submenu>
+		<submenu>
+			<name>AWC INDEX cleaning and reindexing</name>
+			<icon>AND5_com\toolbar\index.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\tc_scripts\300_AND5_AWC_clear_and_reindexing.bat</command>
+		</submenu>
+		<submenu>
+			<name>AWC LOG cleaning</name>
+			<icon>AND5_com\toolbar\clean.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\tc_scripts\301_AND5_AWC_LOG_cleaning.ps1</command>
+		</submenu>
+		<submenu>
+			<name>Separator</name>
+			<icon />
+		</submenu>
+		<submenu>
+			<name>PoolManager LOG cleaning</name>
+			<icon>AND5_com\toolbar\clean.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\tc_scripts\204_AND5_PoolManager_LOG_cleaning.ps1</command>
+		</submenu>
+		<submenu>
+			<name>FULL TC TEMP cleaning</name>
+			<icon>AND5_com\toolbar\clean.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\tc_scripts\203_AND5_TC_FULL_LOG_cleaning.ps1</command>
+		</submenu>
+		<submenu>
+			<name>Separator</name>
+			<icon />
+		</submenu>
+		<submenu>
+			<name>BMIDE calculate DELTA</name>
+			<icon>AND5_com\toolbar\settings.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\tc_models_scripts\1_AND5_compare_TCDATA_with_volume.ps1</command>
+		</submenu>
+	</menu>
+	<menu>
+		<name>Windows TOOLS</name>
+		<icon>AND5_com\toolbar\windows.ico</icon>
+		<submenu>
+			<name>Autorun</name>
+			<icon>AND5_com\toolbar\autorun.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#BIN\Autoruns64.exe</command>
+		</submenu>
+		<submenu>
+			<name>Process Explorer</name>
+			<icon>AND5_com\toolbar\ProcessExplorer.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\toolbar\300_Run_ProcessExplorer.ps1</command>
+		</submenu>
+		<submenu>
+			<name>TCP View</name>
+			<icon>AND5_com\toolbar\network.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#BIN\tcpview64.exe</command>
+		</submenu>
+		<submenu>
+			<name>Background INFO</name>
+			<icon>AND5_com\toolbar\settings.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#BIN\Bginfo64.exe</command>
+		</submenu>
+	</menu>
+	<menu>
+		<name>Separator</name>
+		<icon />
+	</menu>
+	<menu>
+		<name>BMIDE</name>
+		<icon>AND5_de\service_scripts\BMIDE\bmide.ico</icon>
+		<command>AND5_SCRIPTS_ROOT#AND5_de\service_scripts\BMIDE\BMIDE.bat</command>
+	</menu>
+	<menu>
+		<name>Eclipse</name>
+		<icon>AND5_de\service_scripts\Eclipse\eclipse.ico</icon>
+		<command>AND5_SCRIPTS_ROOT#AND5_de\service_scripts\Eclipse\open_TC_eclipse.bat</command>
+	</menu>
+	<menu>
+		<name>JD-GUI-141</name>
+		<icon>AND5_de\service_scripts\JD_GUI\JD-GUI-141.ico</icon>
+		<command>AND5_SCRIPTS_ROOT#AND5_de\service_scripts\JD_GUI\open_JD_GUI_141.bat</command>
+	</menu>
+	<menu>
+		<name>JD-GUI-166</name>
+		<icon>AND5_de\service_scripts\JD_GUI\JD-GUI-166.ico</icon>
+		<command>AND5_SCRIPTS_ROOT#AND5_de\service_scripts\JD_GUI\open_JD_GUI_166.bat</command>
+	</menu>
+	<menu>
+		<name>SQL</name>
+		<icon>AND5_de\service_scripts\SQL\SQL.ico</icon>
+		<command>AND5_SCRIPTS_ROOT#AND5_de\service_scripts\SQL\SQL.bat</command>
+	</menu>
+	<menu>
+		<name>Separator</name>
+		<icon />
+	</menu>
+	<menu>
+		<name>Update C++ Props</name>
+		<icon>AND5_com\toolbar\settings.ico</icon>
+		<command>AND5_SCRIPTS_ROOT#AND5_com\__VStudio_templates\100_AND5_update_all_props.ps1</command>
+	</menu>
+	<menu>
+		<name>Separator</name>
+		<icon />
+	</menu>
+	<menu>
+		<name>TC 4Tiers   infodba</name>
+		<icon>AND5_com\toolbar\tc.ico</icon>
+		<command>AND5_SCRIPTS_ROOT#AND5_com\tc_scripts\400_AND5_TC_run_infodba.ps1</command>
+	</menu>
+	<menu>
+		<name>TC 4Tiers   andrey</name>
+		<icon>AND5_com\toolbar\tc.ico</icon>
+		<command>AND5_SCRIPTS_ROOT#AND5_com\tc_scripts\401_AND5_TC_run_andrey.ps1</command>
+	</menu>
+	<menu>
+		<name>Separator</name>
+		<icon />
+	</menu>
+</toolbar>
