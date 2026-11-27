@@ -1,30 +1,30 @@
-#include "app.h"
+#include "AND5_app.h"
 
-static VOID TrayInit(_Out_ NOTIFYICONDATAW *Data, _In_ HWND Window)
+static VOID AND5_TrayInit(_Out_ NOTIFYICONDATAW *p_Data, _In_ HWND p_Window)
 {
-    ZeroMemory(Data, sizeof(NOTIFYICONDATAW));
-    Data->cbSize = sizeof(NOTIFYICONDATAW);
-    Data->hWnd = Window;
-    Data->uID = 1;
+    ZeroMemory(p_Data, sizeof(NOTIFYICONDATAW));
+    p_Data->cbSize = sizeof(NOTIFYICONDATAW);
+    p_Data->hWnd = p_Window;
+    p_Data->uID = 1;
 }
 
-BOOL TrayAdd(_In_ HWND Window, _In_ HICON Icon)
+BOOL AND5_TrayAdd(_In_ HWND p_Window, _In_ HICON p_Icon)
 {
     NOTIFYICONDATAW nid;
 
-    TrayInit(&nid, Window);
+    AND5_TrayInit(&nid, p_Window);
     nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
-    nid.uCallbackMessage = WM_TRAY;
-    nid.hIcon = Icon;
-    StringCchCopyW(nid.szTip, ARRAYSIZE(nid.szTip), APP_TIP);
+    nid.uCallbackMessage = AND5_WM_TRAY;
+    nid.hIcon = p_Icon;
+    StringCchCopyW(nid.szTip, ARRAYSIZE(nid.szTip), AND5_APP_TIP);
 
     return Shell_NotifyIconW(NIM_ADD, &nid);
 }
 
-VOID TrayRemove(_In_ HWND Window)
+VOID AND5_TrayRemove(_In_ HWND p_Window)
 {
     NOTIFYICONDATAW nid;
 
-    TrayInit(&nid, Window);
+    AND5_TrayInit(&nid, p_Window);
     Shell_NotifyIconW(NIM_DELETE, &nid);
 }

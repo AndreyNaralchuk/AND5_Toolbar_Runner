@@ -1,93 +1,93 @@
-#include "app.h"
+#include "AND5_app.h"
 #include <uxtheme.h>
 
 // Port of PhIconToBitmap (phlib\icotobmp.c), based on the MSDN sample bb757020.
 
-static HBITMAP IcoCreateBitmap(_In_ HDC Dc, _In_ LONG Width, _In_ LONG Height)
+static HBITMAP AND5_IcoCreateBitmap(_In_ HDC p_Dc, _In_ LONG p_Width, _In_ LONG p_Height)
 {
     BITMAPINFO bmi = { 0 };
     PVOID bits;
 
     bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    bmi.bmiHeader.biWidth = Width;
-    bmi.bmiHeader.biHeight = Height;
+    bmi.bmiHeader.biWidth = p_Width;
+    bmi.bmiHeader.biHeight = p_Height;
     bmi.bmiHeader.biPlanes = 1;
     bmi.bmiHeader.biBitCount = 32;
     bmi.bmiHeader.biCompression = BI_RGB;
 
-    return CreateDIBSection(Dc, &bmi, DIB_RGB_COLORS, &bits, NULL, 0);
+    return CreateDIBSection(p_Dc, &bmi, DIB_RGB_COLORS, &bits, NULL, 0);
 }
 
-static BOOL IcoHasAlpha(_In_ PULONG Argb, _In_ LONG Width, _In_ LONG Height, _In_ LONG RowWidth)
+static BOOL AND5_IcoHasAlpha(_In_ PULONG p_Argb, _In_ LONG p_Width, _In_ LONG p_Height, _In_ LONG p_RowWidth)
 {
-    for (LONG y = 0; y < Height; y++)
+    for (LONG y = 0; y < p_Height; y++)
     {
-        for (LONG x = 0; x < Width; x++)
+        for (LONG x = 0; x < p_Width; x++)
         {
-            if (Argb[x] & 0xff000000)
+            if (p_Argb[x] & 0xff000000)
                 return TRUE;
         }
 
-        Argb += RowWidth;
+        p_Argb += p_RowWidth;
     }
 
     return FALSE;
 }
 
 // An icon without an alpha channel: the AND mask says which pixels are transparent.
-static VOID IcoMaskToAlpha(_In_ HDC Dc, _Inout_ PULONG Argb, _In_ HBITMAP Mask, _In_ LONG Width, _In_ LONG Height, _In_ LONG RowWidth)
+static VOID AND5_IcoMaskToAlpha(_In_ HDC p_Dc, _Inout_ PULONG p_Argb, _In_ HBITMAP p_Mask, _In_ LONG p_Width, _In_ LONG p_Height, _In_ LONG p_RowWidth)
 {
     BITMAPINFO bmi = { 0 };
     PULONG mask;
     PULONG bits;
 
-    bits = HeapAlloc(GetProcessHeap(), 0, (SIZE_T)Width * Height * sizeof(ULONG));
+    bits = HeapAlloc(GetProcessHeap(), 0, (SIZE_T)p_Width * p_Height * sizeof(ULONG));
 
     if (!bits)
         return;
 
     bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    bmi.bmiHeader.biWidth = Width;
-    bmi.bmiHeader.biHeight = Height;
+    bmi.bmiHeader.biWidth = p_Width;
+    bmi.bmiHeader.biHeight = p_Height;
     bmi.bmiHeader.biPlanes = 1;
     bmi.bmiHeader.biBitCount = 32;
     bmi.bmiHeader.biCompression = BI_RGB;
 
-    if (GetDIBits(Dc, Mask, 0, Height, bits, &bmi, DIB_RGB_COLORS) == Height)
+    if (GetDIBits(p_Dc, p_Mask, 0, p_Height, bits, &bmi, DIB_RGB_COLORS) == p_Height)
     {
         mask = bits;
 
-        for (LONG y = 0; y < Height; y++)
+        for (LONG y = 0; y < p_Height; y++)
         {
-            for (LONG x = 0; x < Width; x++)
-                Argb[x] = mask[x] ? 0 : Argb[x] | 0xff000000;
+            for (LONG x = 0; x < p_Width; x++)
+                p_Argb[x] = mask[x] ? 0 : p_Argb[x] | 0xff000000;
 
-            mask += Width;
-            Argb += RowWidth;
+            mask += p_Width;
+            p_Argb += p_RowWidth;
         }
     }
 
     HeapFree(GetProcessHeap(), 0, bits);
 }
 
-static VOID IcoFixAlpha(_In_ HPAINTBUFFER Buffer, _In_ HDC Dc, _In_ HICON Icon, _In_ LONG Width, _In_ LONG Height)
+static VOID AND5_IcoFixAlpha(_In_ HPAINTBUFFER p_Buffer, _In_ HDC p_Dc, _In_ HICON p_Icon, _In_ LONG p_Width, _In_ LONG p_Height)
 {
     ICONINFO info;
     RGBQUAD *quad;
     int rowWidth;
 
-    if (FAILED(GetBufferedPaintBits(Buffer, &quad, &rowWidth)))
+    if (FAILED(GetBufferedPaintBits(p_Buffer, &quad, &rowWidth)))
         return;
 
-    if (IcoHasAlpha((PULONG)quad, Width, Height, rowWidth))
+    if (AND5_IcoHasAlpha((PULONG)quad, p_Width, p_Height, rowWidth))
         return;
 
-    if (!GetIconInfo(Icon, &info))
+    if (!GetIconInfo(p_Icon, &info))
         return;
 
     if (info.hbmMask)
     {
-        IcoMaskToAlpha(Dc, (PULONG)quad, info.hbmMask, Width, Height, rowWidth);
+        AND5_IcoMaskToAlpha(p_Dc, (PULONG)quad, info.hbmMask, p_Width, p_Height, rowWidth);
         DeleteObject(info.hbmMask);
     }
 
@@ -95,11 +95,11 @@ static VOID IcoFixAlpha(_In_ HPAINTBUFFER Buffer, _In_ HDC Dc, _In_ HICON Icon, 
         DeleteObject(info.hbmColor);
 }
 
-static HBITMAP IcoToBitmap(_In_ HICON Icon, _In_ LONG Size)
+static HBITMAP AND5_IcoToBitmap(_In_ HICON p_Icon, _In_ LONG p_Size)
 {
     BLENDFUNCTION blend = { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA };
     BP_PAINTPARAMS params = { sizeof(params) };
-    RECT rect = { 0, 0, Size, Size };
+    RECT rect = { 0, 0, p_Size, p_Size };
     HPAINTBUFFER buffer;
     HBITMAP bitmap;
     HBITMAP oldBitmap;
@@ -111,7 +111,7 @@ static HBITMAP IcoToBitmap(_In_ HICON Icon, _In_ LONG Size)
     if (!dc)
         return NULL;
 
-    bitmap = IcoCreateBitmap(dc, Size, Size);
+    bitmap = AND5_IcoCreateBitmap(dc, p_Size, p_Size);
 
     if (!bitmap)
     {
@@ -126,14 +126,14 @@ static HBITMAP IcoToBitmap(_In_ HICON Icon, _In_ LONG Size)
 
     if (buffer)
     {
-        DrawIconEx(bufferDc, 0, 0, Icon, Size, Size, 0, NULL, DI_NORMAL);
-        IcoFixAlpha(buffer, dc, Icon, Size, Size);
+        DrawIconEx(bufferDc, 0, 0, p_Icon, p_Size, p_Size, 0, NULL, DI_NORMAL);
+        AND5_IcoFixAlpha(buffer, dc, p_Icon, p_Size, p_Size);
         EndBufferedPaint(buffer, TRUE);
     }
     else
     {
         FillRect(dc, &rect, (HBRUSH)(COLOR_MENU + 1));
-        DrawIconEx(dc, 0, 0, Icon, Size, Size, 0, NULL, DI_NORMAL);
+        DrawIconEx(dc, 0, 0, p_Icon, p_Size, p_Size, 0, NULL, DI_NORMAL);
     }
 
     SelectObject(dc, oldBitmap);
@@ -142,17 +142,17 @@ static HBITMAP IcoToBitmap(_In_ HICON Icon, _In_ LONG Size)
     return bitmap;
 }
 
-HBITMAP IcoLoadBitmap(_In_ PCWSTR Path, _In_ LONG Size)
+HBITMAP AND5_IcoLoadBitmap(_In_ PCWSTR p_Path, _In_ LONG p_Size)
 {
     HBITMAP bitmap;
     HICON icon;
 
-    icon = LoadImageW(NULL, Path, IMAGE_ICON, Size, Size, LR_LOADFROMFILE);
+    icon = LoadImageW(NULL, p_Path, IMAGE_ICON, p_Size, p_Size, LR_LOADFROMFILE);
 
     if (!icon)
         return NULL;
 
-    bitmap = IcoToBitmap(icon, Size);
+    bitmap = AND5_IcoToBitmap(icon, p_Size);
     DestroyIcon(icon);
 
     return bitmap;

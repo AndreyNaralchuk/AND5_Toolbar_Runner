@@ -1,176 +1,176 @@
-#include "app.h"
+#include "AND5_app.h"
 #include <objbase.h>
 #include <initguid.h>
 #include <xmllite.h>
 #include <shlwapi.h>
 
-typedef enum _XML_FIELD
+typedef enum _AND5_XML_FIELD
 {
-    FieldNone,
-    FieldName,
-    FieldIcon,
-    FieldCommand
-} XML_FIELD;
+    AND5_FieldNone,
+    AND5_FieldName,
+    AND5_FieldIcon,
+    AND5_FieldCommand
+} AND5_XML_FIELD;
 
-typedef struct _XML_CONTEXT
+typedef struct _AND5_XML_CONTEXT
 {
-    PTB_ITEM Root;
-    TB_ITEM Menu;       // <menu> being read; its children are <submenu> items
-    TB_ITEM Sub;        // <submenu> being read
+    PAND5_TB_ITEM Root;
+    AND5_TB_ITEM Menu;       // <menu> being read; its children are <submenu> items
+    AND5_TB_ITEM Sub;        // <submenu> being read
     BOOL InMenu;
     BOOL InSub;
-    XML_FIELD Field;
-} XML_CONTEXT;
+    AND5_XML_FIELD Field;
+} AND5_XML_CONTEXT;
 
 // Items are copied by value, so a parent never keeps pointers into its own array.
-static BOOL XmlAppend(_Inout_ PTB_ITEM Parent, _In_ const TB_ITEM *Item)
+static BOOL AND5_XmlAppend(_Inout_ PAND5_TB_ITEM p_Parent, _In_ const AND5_TB_ITEM *p_Item)
 {
-    PTB_ITEM items;
+    PAND5_TB_ITEM items;
 
-    if (Parent->Items)
-        items = HeapReAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, Parent->Items, (Parent->Count + 1) * sizeof(TB_ITEM));
+    if (p_Parent->Items)
+        items = HeapReAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, p_Parent->Items, (p_Parent->Count + 1) * sizeof(AND5_TB_ITEM));
     else
-        items = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(TB_ITEM));
+        items = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(AND5_TB_ITEM));
 
     if (!items)
         return FALSE;
 
-    Parent->Items = items;
-    items[Parent->Count++] = *Item;
+    p_Parent->Items = items;
+    items[p_Parent->Count++] = *p_Item;
     return TRUE;
 }
 
-static VOID XmlClassify(_Inout_ PTB_ITEM Item)
+static VOID AND5_XmlClassify(_Inout_ PAND5_TB_ITEM p_Item)
 {
-    if (!_wcsicmp(Item->Name, L"Separator"))
-        Item->Kind = TbSeparator;
-    else if (Item->Command[0])
-        Item->Kind = TbCommand;
-    else if (!_wcsicmp(Item->Name, L"About"))
-        Item->Kind = TbAbout;
-    else if (!_wcsicmp(Item->Name, L"Exit"))
-        Item->Kind = TbExit;
+    if (!_wcsicmp(p_Item->Name, L"Separator"))
+        p_Item->Kind = AND5_TbSeparator;
+    else if (p_Item->Command[0])
+        p_Item->Kind = AND5_TbCommand;
+    else if (!_wcsicmp(p_Item->Name, L"About"))
+        p_Item->Kind = AND5_TbAbout;
+    else if (!_wcsicmp(p_Item->Name, L"Exit"))
+        p_Item->Kind = AND5_TbExit;
     else
-        Item->Kind = TbNone;
+        p_Item->Kind = AND5_TbNone;
 }
 
-static VOID XmlSetField(_Inout_ XML_CONTEXT *Context, _In_ PCWSTR Text)
+static VOID AND5_XmlSetField(_Inout_ AND5_XML_CONTEXT *p_Context, _In_ PCWSTR p_Text)
 {
-    PTB_ITEM item = Context->InSub ? &Context->Sub : &Context->Menu;
+    PAND5_TB_ITEM item = p_Context->InSub ? &p_Context->Sub : &p_Context->Menu;
 
-    switch (Context->Field)
+    switch (p_Context->Field)
     {
-    case FieldName:
-        StringCchCopyW(item->Name, ARRAYSIZE(item->Name), Text);
+    case AND5_FieldName:
+        StringCchCopyW(item->Name, ARRAYSIZE(item->Name), p_Text);
         break;
-    case FieldIcon:
-        StringCchCopyW(item->Icon, ARRAYSIZE(item->Icon), Text);
+    case AND5_FieldIcon:
+        StringCchCopyW(item->Icon, ARRAYSIZE(item->Icon), p_Text);
         break;
-    case FieldCommand:
-        StringCchCopyW(item->Command, ARRAYSIZE(item->Command), Text);
+    case AND5_FieldCommand:
+        StringCchCopyW(item->Command, ARRAYSIZE(item->Command), p_Text);
         break;
     }
 }
 
-static VOID XmlOnStart(_Inout_ XML_CONTEXT *Context, _In_ PCWSTR Name)
+static VOID AND5_XmlOnStart(_Inout_ AND5_XML_CONTEXT *p_Context, _In_ PCWSTR p_Name)
 {
-    if (!Context->InMenu)
+    if (!p_Context->InMenu)
     {
-        if (!wcscmp(Name, L"menu"))
+        if (!wcscmp(p_Name, L"menu"))
         {
-            ZeroMemory(&Context->Menu, sizeof(TB_ITEM));
-            Context->InMenu = TRUE;
+            ZeroMemory(&p_Context->Menu, sizeof(AND5_TB_ITEM));
+            p_Context->InMenu = TRUE;
         }
 
         return;
     }
 
-    if (!Context->InSub && !wcscmp(Name, L"submenu"))
+    if (!p_Context->InSub && !wcscmp(p_Name, L"submenu"))
     {
-        ZeroMemory(&Context->Sub, sizeof(TB_ITEM));
-        Context->InSub = TRUE;
+        ZeroMemory(&p_Context->Sub, sizeof(AND5_TB_ITEM));
+        p_Context->InSub = TRUE;
     }
-    else if (!wcscmp(Name, L"name"))
-        Context->Field = FieldName;
-    else if (!wcscmp(Name, L"icon"))
-        Context->Field = FieldIcon;
-    else if (!wcscmp(Name, L"command"))
-        Context->Field = FieldCommand;
+    else if (!wcscmp(p_Name, L"name"))
+        p_Context->Field = AND5_FieldName;
+    else if (!wcscmp(p_Name, L"icon"))
+        p_Context->Field = AND5_FieldIcon;
+    else if (!wcscmp(p_Name, L"command"))
+        p_Context->Field = AND5_FieldCommand;
     else
-        Context->Field = FieldNone;
+        p_Context->Field = AND5_FieldNone;
 }
 
-static BOOL XmlOnEnd(_Inout_ XML_CONTEXT *Context, _In_ PCWSTR Name)
+static BOOL AND5_XmlOnEnd(_Inout_ AND5_XML_CONTEXT *p_Context, _In_ PCWSTR p_Name)
 {
     BOOL ok = TRUE;
 
-    if (Context->InSub && !wcscmp(Name, L"submenu"))
+    if (p_Context->InSub && !wcscmp(p_Name, L"submenu"))
     {
-        XmlClassify(&Context->Sub);
-        ok = XmlAppend(&Context->Menu, &Context->Sub);
-        Context->InSub = FALSE;
-        Context->Field = FieldNone;
+        AND5_XmlClassify(&p_Context->Sub);
+        ok = AND5_XmlAppend(&p_Context->Menu, &p_Context->Sub);
+        p_Context->InSub = FALSE;
+        p_Context->Field = AND5_FieldNone;
     }
-    else if (Context->InMenu && !Context->InSub && !wcscmp(Name, L"menu"))
+    else if (p_Context->InMenu && !p_Context->InSub && !wcscmp(p_Name, L"menu"))
     {
-        XmlClassify(&Context->Menu);
-        ok = XmlAppend(Context->Root, &Context->Menu);
+        AND5_XmlClassify(&p_Context->Menu);
+        ok = AND5_XmlAppend(p_Context->Root, &p_Context->Menu);
 
         if (ok)
-            ZeroMemory(&Context->Menu, sizeof(TB_ITEM)); // children now belong to Root
+            ZeroMemory(&p_Context->Menu, sizeof(AND5_TB_ITEM)); // children now belong to Root
 
-        Context->InMenu = FALSE;
-        Context->Field = FieldNone;
+        p_Context->InMenu = FALSE;
+        p_Context->Field = AND5_FieldNone;
     }
     else
-        Context->Field = FieldNone;
+        p_Context->Field = AND5_FieldNone;
 
     return ok;
 }
 
-static HRESULT XmlParse(_In_ IXmlReader *Reader, _Inout_ XML_CONTEXT *Context)
+static HRESULT AND5_XmlParse(_In_ IXmlReader *p_Reader, _Inout_ AND5_XML_CONTEXT *p_Context)
 {
     XmlNodeType type;
     PCWSTR text;
     HRESULT hr;
 
-    while ((hr = Reader->lpVtbl->Read(Reader, &type)) == S_OK)
+    while ((hr = p_Reader->lpVtbl->Read(p_Reader, &type)) == S_OK)
     {
         switch (type)
         {
         case XmlNodeType_Element:
-            hr = Reader->lpVtbl->GetLocalName(Reader, &text, NULL);
+            hr = p_Reader->lpVtbl->GetLocalName(p_Reader, &text, NULL);
 
             if (FAILED(hr))
                 return hr;
 
-            XmlOnStart(Context, text);
+            AND5_XmlOnStart(p_Context, text);
 
             // An empty element such as <icon /> has no end node.
-            if (Reader->lpVtbl->IsEmptyElement(Reader) && !XmlOnEnd(Context, text))
+            if (p_Reader->lpVtbl->IsEmptyElement(p_Reader) && !AND5_XmlOnEnd(p_Context, text))
                 return E_OUTOFMEMORY;
 
             break;
         case XmlNodeType_EndElement:
-            hr = Reader->lpVtbl->GetLocalName(Reader, &text, NULL);
+            hr = p_Reader->lpVtbl->GetLocalName(p_Reader, &text, NULL);
 
             if (FAILED(hr))
                 return hr;
 
-            if (!XmlOnEnd(Context, text))
+            if (!AND5_XmlOnEnd(p_Context, text))
                 return E_OUTOFMEMORY;
 
             break;
         case XmlNodeType_Text:
         case XmlNodeType_CDATA:
-            if (Context->InMenu && Context->Field != FieldNone)
+            if (p_Context->InMenu && p_Context->Field != AND5_FieldNone)
             {
-                hr = Reader->lpVtbl->GetValue(Reader, &text, NULL);
+                hr = p_Reader->lpVtbl->GetValue(p_Reader, &text, NULL);
 
                 if (FAILED(hr))
                     return hr;
 
-                XmlSetField(Context, text);
+                AND5_XmlSetField(p_Context, text);
             }
 
             break;
@@ -181,28 +181,28 @@ static HRESULT XmlParse(_In_ IXmlReader *Reader, _Inout_ XML_CONTEXT *Context)
 }
 
 // Minimal menu, so the user can still reach About and Exit when the XML is broken.
-static VOID XmlFallback(_Inout_ PTB_ITEM Root)
+static VOID AND5_XmlFallback(_Inout_ PAND5_TB_ITEM p_Root)
 {
-    TB_ITEM about = { TbAbout };
-    TB_ITEM exit = { TbExit };
+    AND5_TB_ITEM about = { AND5_TbAbout };
+    AND5_TB_ITEM exit = { AND5_TbExit };
 
     StringCchCopyW(about.Name, ARRAYSIZE(about.Name), L"About");
     StringCchCopyW(exit.Name, ARRAYSIZE(exit.Name), L"Exit");
-    XmlAppend(Root, &about);
-    XmlAppend(Root, &exit);
+    AND5_XmlAppend(p_Root, &about);
+    AND5_XmlAppend(p_Root, &exit);
 }
 
-BOOL XmlLoad(_In_ PCWSTR XmlFile, _Out_ PTB_ITEM Root)
+BOOL AND5_XmlLoad(_In_ PCWSTR p_XmlFile, _Out_ PAND5_TB_ITEM p_Root)
 {
-    XML_CONTEXT context = { 0 };
+    AND5_XML_CONTEXT context = { 0 };
     IStream *stream = NULL;
     IXmlReader *reader = NULL;
     HRESULT hr;
 
-    ZeroMemory(Root, sizeof(TB_ITEM));
-    context.Root = Root;
+    ZeroMemory(p_Root, sizeof(AND5_TB_ITEM));
+    context.Root = p_Root;
 
-    hr = SHCreateStreamOnFileW(XmlFile, STGM_READ | STGM_SHARE_DENY_NONE, &stream);
+    hr = SHCreateStreamOnFileW(p_XmlFile, STGM_READ | STGM_SHARE_DENY_NONE, &stream);
 
     if (SUCCEEDED(hr))
         hr = CreateXmlReader(&IID_IXmlReader, (PVOID *)&reader, NULL);
@@ -214,7 +214,7 @@ BOOL XmlLoad(_In_ PCWSTR XmlFile, _Out_ PTB_ITEM Root)
         hr = reader->lpVtbl->SetInput(reader, (IUnknown *)stream);
 
     if (SUCCEEDED(hr))
-        hr = XmlParse(reader, &context);
+        hr = AND5_XmlParse(reader, &context);
 
     if (reader)
         reader->lpVtbl->Release(reader);
@@ -222,25 +222,25 @@ BOOL XmlLoad(_In_ PCWSTR XmlFile, _Out_ PTB_ITEM Root)
     if (stream)
         stream->lpVtbl->Release(stream);
 
-    if (FAILED(hr) || !Root->Count)
+    if (FAILED(hr) || !p_Root->Count)
     {
-        XmlFree(&context.Menu); // partly read <menu>
-        XmlFree(Root);
-        XmlFallback(Root);
+        AND5_XmlFree(&context.Menu); // partly read <menu>
+        AND5_XmlFree(p_Root);
+        AND5_XmlFallback(p_Root);
         return FALSE;
     }
 
     return TRUE;
 }
 
-VOID XmlFree(_Inout_ PTB_ITEM Root)
+VOID AND5_XmlFree(_Inout_ PAND5_TB_ITEM p_Root)
 {
-    for (ULONG i = 0; i < Root->Count; i++)
-        XmlFree(&Root->Items[i]);
+    for (ULONG i = 0; i < p_Root->Count; i++)
+        AND5_XmlFree(&p_Root->Items[i]);
 
-    if (Root->Items)
-        HeapFree(GetProcessHeap(), 0, Root->Items);
+    if (p_Root->Items)
+        HeapFree(GetProcessHeap(), 0, p_Root->Items);
 
-    Root->Items = NULL;
-    Root->Count = 0;
+    p_Root->Items = NULL;
+    p_Root->Count = 0;
 }

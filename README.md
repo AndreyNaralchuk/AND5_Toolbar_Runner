@@ -138,13 +138,13 @@ The XML path is the first command-line argument. If there is none, it is `%AND5_
 
 ## Source layout
 
-`src\` has `main.c`, `config.c`, `xml.c`, `icon.c`, `menu.c`, `tray.c`, `exec.c`, `app.h`, `app.rc`, `app.manifest`.
+`src\` has `AND5_main.c`, `AND5_config.c`, `AND5_xml.c`, `AND5_icon.c`, `AND5_menu.c`, `AND5_tray.c`, `AND5_exec.c`, `AND5_app.h`, `AND5_app.rc`, `AND5_app.manifest`.
 
 ## Program structure
 
 ### Modules
 
-Arrows show which module calls which. All modules share the types and the `AppConfig` variable from `app.h`.
+Arrows show which module calls which. All modules share the types and the `gl_AND5_AppConfig` variable from `AND5_app.h`.
 
 ```mermaid
 flowchart TD
@@ -154,15 +154,15 @@ flowchart TD
     ICO[("*.ico files")]
 
     subgraph EXE["AND5_Toolbar_Runner.exe"]
-        MAIN["main.c<br/>wWinMain, AppWndProc<br/>AppLoad, AppUnload"]
-        CFG["config.c<br/>CfgInit<br/>CfgResolveIcon<br/>CfgResolveCommand"]
-        XML["xml.c<br/>XmlLoad, XmlFree<br/>XmlLite parser"]
-        MENU["menu.c<br/>MenuBuild, MenuShow<br/>MenuFind, MenuDestroy"]
-        ICON["icon.c<br/>IcoLoadBitmap"]
-        TRAY["tray.c<br/>TrayAdd, TrayRemove"]
-        EXEC["exec.c<br/>ExecItem"]
-        APP["app.h<br/>TB_ITEM, TB_KIND<br/>APP_CONFIG, constants"]
-        RES["app.rc, resource.h<br/>app.manifest<br/>IDI_APP icon"]
+        MAIN["AND5_main.c<br/>wWinMain, AND5_AppWndProc<br/>AND5_AppLoad, AND5_AppUnload"]
+        CFG["AND5_config.c<br/>AND5_CfgInit<br/>AND5_CfgResolveIcon<br/>AND5_CfgResolveCommand"]
+        XML["AND5_xml.c<br/>AND5_XmlLoad, AND5_XmlFree<br/>XmlLite parser"]
+        MENU["AND5_menu.c<br/>AND5_MenuBuild, AND5_MenuShow<br/>AND5_MenuFind, AND5_MenuDestroy"]
+        ICON["AND5_icon.c<br/>AND5_IcoLoadBitmap"]
+        TRAY["AND5_tray.c<br/>AND5_TrayAdd, AND5_TrayRemove"]
+        EXEC["AND5_exec.c<br/>AND5_ExecItem"]
+        APP["AND5_app.h<br/>AND5_TB_ITEM, AND5_TB_KIND<br/>AND5_CONFIG, constants"]
+        RES["AND5_app.rc, AND5_resource.h<br/>AND5_app.manifest<br/>IDI_APP icon"]
     end
 
     PS["powershell.exe<br/>runas, administrator"]
@@ -204,36 +204,36 @@ flowchart TD
 ```mermaid
 sequenceDiagram
     participant U as User
-    participant M as main.c
-    participant C as config.c
-    participant X as xml.c
-    participant B as menu.c
-    participant T as tray.c
-    participant E as exec.c
+    participant M as AND5_main.c
+    participant C as AND5_config.c
+    participant X as AND5_xml.c
+    participant B as AND5_menu.c
+    participant T as AND5_tray.c
+    participant E as AND5_exec.c
 
-    M->>C: CfgInit(argv 1)
-    M->>M: AppLoadIcon (ok.ico or IDI_APP)
+    M->>C: AND5_CfgInit(argv 1)
+    M->>M: AND5_AppLoadIcon (AND5_ok.ico or IDI_APP)
     M->>M: RegisterClassExW, CreateWindowExW
     Note over M: WM_CREATE
-    M->>X: XmlLoad(XmlFile)
-    X-->>M: TB_ITEM tree
-    M->>B: MenuBuild(tree)
-    M->>T: TrayAdd(icon)
+    M->>X: AND5_XmlLoad(XmlFile)
+    X-->>M: AND5_TB_ITEM tree
+    M->>B: AND5_MenuBuild(tree)
+    M->>T: AND5_TrayAdd(icon)
     U->>T: click on tray icon
-    T-->>M: WM_TRAY
-    M->>B: MenuShow
+    T-->>M: AND5_WM_TRAY
+    M->>B: AND5_MenuShow
     U->>B: choose item
     B-->>M: WM_COMMAND(Id)
-    M->>B: MenuFind(Id)
-    M->>E: ExecItem(item)
-    alt TbCommand
-        E->>C: CfgResolveCommand
+    M->>B: AND5_MenuFind(Id)
+    M->>E: AND5_ExecItem(item)
+    alt AND5_TbCommand
+        E->>C: AND5_CfgResolveCommand
         E->>E: ShellExecuteExW runas powershell.exe
-    else TbAbout
+    else AND5_TbAbout
         E->>U: About window
-    else TbExit
+    else AND5_TbExit
         E->>M: DestroyWindow
-        Note over M: WM_DESTROY<br/>TrayRemove, AppUnload
+        Note over M: WM_DESTROY<br/>AND5_TrayRemove, AND5_AppUnload
     end
 ```
 
@@ -241,31 +241,31 @@ sequenceDiagram
 
 ```mermaid
 classDiagram
-    class TB_ITEM {
-        TB_KIND Kind
+    class AND5_TB_ITEM {
+        AND5_TB_KIND Kind
         WCHAR Name
         WCHAR Icon
         WCHAR Command
         UINT Id
         HBITMAP Bitmap
-        TB_ITEM* Items
+        AND5_TB_ITEM* Items
         ULONG Count
     }
-    class TB_KIND {
+    class AND5_TB_KIND {
         <<enumeration>>
-        TbNone
-        TbCommand
-        TbSeparator
-        TbAbout
-        TbExit
+        AND5_TbNone
+        AND5_TbCommand
+        AND5_TbSeparator
+        AND5_TbAbout
+        AND5_TbExit
     }
-    class APP_CONFIG {
+    class AND5_CONFIG {
         WCHAR Root
         WCHAR Home
         WCHAR XmlFile
     }
-    TB_ITEM --> TB_KIND : Kind
-    TB_ITEM "1" o-- "0..*" TB_ITEM : Items, submenu
+    AND5_TB_ITEM --> AND5_TB_KIND : Kind
+    AND5_TB_ITEM "1" o-- "0..*" AND5_TB_ITEM : Items, submenu
 ```
 
 ## Build
