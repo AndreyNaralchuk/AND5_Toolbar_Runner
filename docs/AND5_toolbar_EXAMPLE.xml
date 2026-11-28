@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<toolbar>
+	<menu>
+		<name>About</name>
+		<icon>AND5_com\toolbar\about.ico</icon>
+		<submenu>
+			<name>About</name>
+			<icon>AND5_com\toolbar\about.ico</icon>
+		</submenu>
+		<submenu>
+			<name>Exit</name>
+			<icon>AND5_com\toolbar\exit.ico</icon>
+		</submenu>
+	</menu>
+	<menu>
+		<name>Task Manager</name>
+		<icon>AND5_com\daily_scripts\Task_Manager.ico</icon>
+		<command>AND5_SCRIPTS_ROOT#AND5_com\daily_scripts\Task_Manager.bat</command>
+	</menu>
+	<menu>
+		<name>Windows TOOLS</name>
+		<icon>AND5_com\toolbar\windows.ico</icon>
+		<submenu>
+			<name>Autorun</name>
+			<icon>AND5_com\toolbar\autorun.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#BIN\Autoruns64.exe</command>
+		</submenu>
+		<submenu>
+			<name>Process Explorer</name>
+			<icon>AND5_com\toolbar\ProcessExplorer.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#AND5_com\toolbar\300_Run_ProcessExplorer.ps1</command>
+		</submenu>
+		<submenu>
+			<name>TCP View</name>
+			<icon>AND5_com\toolbar\network.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#BIN\tcpview64.exe</command>
+		</submenu>
+		<submenu>
+			<name>Background INFO</name>
+			<icon>AND5_com\toolbar\settings.ico</icon>
+			<command>AND5_SCRIPTS_ROOT#BIN\Bginfo64.exe</command>
+		</submenu>
+	</menu>
+	<menu>
+		<name>Eclipse</name>
+		<icon>AND5_de\service_scripts\Eclipse\eclipse.ico</icon>
+		<command>AND5_SCRIPTS_ROOT#AND5_de\service_scripts\Eclipse\open_TC_eclipse.bat</command>
+	</menu>
+</toolbar>

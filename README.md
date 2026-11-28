@@ -1,12 +1,20 @@
 # AND5_Toolbar_Runner
 
+Full description: [docs/README_FULL.md](docs/README_FULL.md).
+
+![C](https://img.shields.io/badge/c-%2300599C.svg?style=for-the-badge&logo=c&logoColor=white)
+![CMake](https://img.shields.io/badge/CMake-%23008FBA.svg?style=for-the-badge&logo=cmake&logoColor=white)
+![Visual Studio](https://img.shields.io/badge/Visual%20Studio%202022-%235C2D91.svg?style=for-the-badge&logo=visualstudio&logoColor=white)
+![Windows](https://img.shields.io/badge/Win32%20API-%230078D6.svg?style=for-the-badge&logo=windows&logoColor=white)
+![PowerShell](https://img.shields.io/badge/PowerShell-%235391FE.svg?style=for-the-badge&logo=powershell&logoColor=white)
+![XML](https://img.shields.io/badge/XML%20%28XmlLite%29-%23005FAD.svg?style=for-the-badge&logo=xml&logoColor=white)
+![Markdown](https://img.shields.io/badge/markdown-%23000000.svg?style=for-the-badge&logo=markdown&logoColor=white)
+![Mermaid](https://img.shields.io/badge/Mermaid-%23FF3670.svg?style=for-the-badge&logo=mermaid&logoColor=white)
+<hr>
+
 A Windows system tray toolbar. The tray icon opens a menu. The menu is built from `AND5_toolbar.xml`. A menu item runs a script or program as administrator.
 
-It is a port of the PowerShell script `AND5_SCRIPTS_HOME\AND5_com\toolbar\1_AND5_create_toolbar_on_Logon.ps1` to plain C and the Win32 API.
-
 **Status: working.** Open items: single instance, and XML reload without restart.
-
-Full documentation: `F:\DEV_HOME\AI_Projects\AND5_Toolbar_Runner\README_FULL.md`
 
 ## Download
 
@@ -22,9 +30,9 @@ Full documentation: `F:\DEV_HOME\AI_Projects\AND5_Toolbar_Runner\README_FULL.md`
 
 The tray menu of the running program:
 
-![UI example](Images_From_Running/UI_Example.png)
+![UI example: tray menu of AND5_Toolbar_Runner](docs/UI_Example.png)
 
-### Install with PowerShell
+## Install with PowerShell
 
 Run in a normal PowerShell window. The script downloads the program to `%LOCALAPPDATA%\AND5_Toolbar_Runner`, adds a shortcut to autostart and starts the program.
 
@@ -142,131 +150,7 @@ The XML path is the first command-line argument. If there is none, it is `%AND5_
 
 ## Program structure
 
-### Modules
-
-Arrows show which module calls which. All modules share the types and the `gl_AND5_AppConfig` variable from `AND5_app.h`.
-
-```mermaid
-flowchart TD
-    ENV[("Environment<br/>AND5_SCRIPTS_ROOT<br/>AND5_SCRIPTS_HOME")]
-    ARG[/"Command line<br/>argv 1 = XML path"/]
-    XMLF[("AND5_toolbar.xml")]
-    ICO[("*.ico files")]
-
-    subgraph EXE["AND5_Toolbar_Runner.exe"]
-        MAIN["AND5_main.c<br/>wWinMain, AND5_AppWndProc<br/>AND5_AppLoad, AND5_AppUnload"]
-        CFG["AND5_config.c<br/>AND5_CfgInit<br/>AND5_CfgResolveIcon<br/>AND5_CfgResolveCommand"]
-        XML["AND5_xml.c<br/>AND5_XmlLoad, AND5_XmlFree<br/>XmlLite parser"]
-        MENU["AND5_menu.c<br/>AND5_MenuBuild, AND5_MenuShow<br/>AND5_MenuFind, AND5_MenuDestroy"]
-        ICON["AND5_icon.c<br/>AND5_IcoLoadBitmap"]
-        TRAY["AND5_tray.c<br/>AND5_TrayAdd, AND5_TrayRemove"]
-        EXEC["AND5_exec.c<br/>AND5_ExecItem"]
-        APP["AND5_app.h<br/>AND5_TB_ITEM, AND5_TB_KIND<br/>AND5_CONFIG, constants"]
-        RES["AND5_app.rc, AND5_resource.h<br/>AND5_app.manifest<br/>IDI_APP icon"]
-    end
-
-    PS["powershell.exe<br/>runas, administrator"]
-    SCR["bat and ps1 scripts"]
-    SHELL["Windows shell<br/>tray, popup menu"]
-
-    ARG --> CFG
-    ENV --> CFG
-    MAIN --> CFG
-    MAIN --> XML
-    MAIN --> MENU
-    MAIN --> TRAY
-    MAIN --> EXEC
-    XML --> XMLF
-    MENU --> ICON
-    MENU --> CFG
-    ICON --> ICO
-    EXEC --> CFG
-    EXEC --> PS
-    PS --> SCR
-    TRAY --> SHELL
-    MENU --> SHELL
-    RES -.-> MAIN
-    APP -.-> MAIN
-
-    style MAIN fill:#DBEAFE,stroke:#2563EB,color:#172554
-    style CFG fill:#FEF3C7,stroke:#D97706,color:#422006
-    style XML fill:#DCFCE7,stroke:#16A34A,color:#14532D
-    style MENU fill:#DCFCE7,stroke:#16A34A,color:#14532D
-    style ICON fill:#DCFCE7,stroke:#16A34A,color:#14532D
-    style TRAY fill:#DCFCE7,stroke:#16A34A,color:#14532D
-    style EXEC fill:#FEE2E2,stroke:#DC2626,color:#7F1D1D
-    style APP fill:#F3F4F6,stroke:#6B7280,color:#111827
-    style RES fill:#F3F4F6,stroke:#6B7280,color:#111827
-```
-
-### Runtime flow
-
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant M as AND5_main.c
-    participant C as AND5_config.c
-    participant X as AND5_xml.c
-    participant B as AND5_menu.c
-    participant T as AND5_tray.c
-    participant E as AND5_exec.c
-
-    M->>C: AND5_CfgInit(argv 1)
-    M->>M: AND5_AppLoadIcon (AND5_ok.ico or IDI_APP)
-    M->>M: RegisterClassExW, CreateWindowExW
-    Note over M: WM_CREATE
-    M->>X: AND5_XmlLoad(XmlFile)
-    X-->>M: AND5_TB_ITEM tree
-    M->>B: AND5_MenuBuild(tree)
-    M->>T: AND5_TrayAdd(icon)
-    U->>T: click on tray icon
-    T-->>M: AND5_WM_TRAY
-    M->>B: AND5_MenuShow
-    U->>B: choose item
-    B-->>M: WM_COMMAND(Id)
-    M->>B: AND5_MenuFind(Id)
-    M->>E: AND5_ExecItem(item)
-    alt AND5_TbCommand
-        E->>C: AND5_CfgResolveCommand
-        E->>E: ShellExecuteExW runas powershell.exe
-    else AND5_TbAbout
-        E->>U: About window
-    else AND5_TbExit
-        E->>M: DestroyWindow
-        Note over M: WM_DESTROY<br/>AND5_TrayRemove, AND5_AppUnload
-    end
-```
-
-### Data model
-
-```mermaid
-classDiagram
-    class AND5_TB_ITEM {
-        AND5_TB_KIND Kind
-        WCHAR Name
-        WCHAR Icon
-        WCHAR Command
-        UINT Id
-        HBITMAP Bitmap
-        AND5_TB_ITEM* Items
-        ULONG Count
-    }
-    class AND5_TB_KIND {
-        <<enumeration>>
-        AND5_TbNone
-        AND5_TbCommand
-        AND5_TbSeparator
-        AND5_TbAbout
-        AND5_TbExit
-    }
-    class AND5_CONFIG {
-        WCHAR Root
-        WCHAR Home
-        WCHAR XmlFile
-    }
-    AND5_TB_ITEM --> AND5_TB_KIND : Kind
-    AND5_TB_ITEM "1" o-- "0..*" AND5_TB_ITEM : Items, submenu
-```
+Diagrams of the modules, data model, life cycle, menu click and menu build: [docs/README_FULL.md](docs/README_FULL.md#diagrams).
 
 ## Build
 
